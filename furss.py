@@ -227,7 +227,7 @@ def main(feed, get_body, lim=None):
         if 'id' in e: tag('id', e['id'])
         if 'summary' in e: tag('summary', e['summary'])
         if 'updated' in e: tag('updated', e['updated'])
-        tag('content', xml.etree.ElementTree.tostring(e['newcontent']), base=e['link'], type='html')
+        tag('content', xml.etree.ElementTree.tostring(e['newcontent']), type='html', **{'xml:base': e['link']})
         end('entry')
     end('feed')
     return xml.etree.ElementTree.tostring(builder.close())
