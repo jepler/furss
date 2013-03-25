@@ -8,6 +8,7 @@ does the XPATH extraction, and packages the result as the new feed.
 
 # Requirements
 
+- Python 2.7 (2.6 is missing some xpath features such as attribute matching)
 - feedparser (tested with 5.1.2)
 - BeautifulSoup3 (tested with 3.2.1)
 
