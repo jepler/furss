@@ -30,6 +30,7 @@ import xml.etree.ElementTree
 
 useragent = "Feed-Fixer/0.1 (python)"
 expiry = 3600
+cacher = lambda: MemcacheCacher(['localhost:11211'])
 
 class CacherInterface:
     def get(self, k, f):
@@ -94,7 +95,7 @@ class MemcacheCacher(CacherInterface):
         print  >>sys.stderr,"set", k
         self.client.set(k, v)
 
-cache = SimpleCacher()
+cache = cacher()
 
 class Opener(urllib.FancyURLopener):
     version = useragent
