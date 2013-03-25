@@ -67,6 +67,33 @@ class SimpleCacher(CacherInterface):
         print >>sys.stderr, "set", k
         self.d[k] = v
 
+class MemcacheCacher(CacherInterface):
+    def __init__(self, sock_path):
+        import memcache
+        self.client = memcache.Client(sock_path)
+
+    def _key(self, k):
+        if isinstance(k, tuple): k = "-".join(k)
+        if isinstance(k, unicode): k = k.encode('utf-8')
+        return k
+    def get(self, k, f, *args):
+        k = self._key(k)
+        v = self.client.get(k)
+        if v is not None:
+            print >>sys.stderr, "hit", k
+            return v
+        print  >>sys.stderr,"miss", k
+        if f is None:
+            return None
+        v = f(*args)
+        self.client.set(k, v)
+        return v
+
+    def set(self, k, v):
+        k = self._key(k)
+        print  >>sys.stderr,"set", k
+        self.client.set(k, v)
+
 cache = SimpleCacher()
 
 class Opener(urllib.FancyURLopener):

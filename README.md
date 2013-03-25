@@ -12,6 +12,9 @@ does the XPATH extraction, and packages the result as the new feed.
 - feedparser (tested with 5.1.2)
 - BeautifulSoup3 (tested with 3.2.1)
 
+Optional:
+- memcached (the default debian/ubuntu packaging sets up memcached compatibly)
+
 # License
 
 The following license is granted by the authors for all code in this
