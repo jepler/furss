@@ -19,7 +19,9 @@
 
 import BeautifulSoup
 import StringIO
+import errno
 import feedparser
+import os
 import robotparser
 import sys
 import time
@@ -28,9 +30,15 @@ import urlparse
 import xml.etree.ElementTree
 
 
+rcfile = os.path.expanduser("~/.furssrc")
+# Configure the below items in your rcfile
 useragent = "Feed-Fixer/0.1 (python)"
 expiry = 3600
-cacher = lambda: MemcacheCacher(['localhost:11211'])
+#cacher = lambda: MemcacheCacher(['localhost:11211'])
+cacher = lambda: SimpleCacher()
+outdir = 'out'
+extension = '.atom'
+max_items = 3 # None = no limit (all items from original feed)
 
 class CacherInterface:
     def get(self, k, f):
@@ -225,7 +233,15 @@ def firstn(it, lim):
             if i == lim: break
             yield j
 
-def main(feed, get_body, lim=None):
+def do_one_site(feed, get_body, lim=None, outdir='out', extension='.atom'):
+    try:
+        os.mkdir(outdir)
+    except os.error, e:
+        if e.errno != errno.EEXIST: raise
+
+    target = os.path.join(outdir,
+            feed.replace('%', '%25').replace('/', '%2f') + extension)
+
     f = FeedFixer(feed, get_body)
 
     builder = xml.etree.ElementTree.TreeBuilder()
@@ -259,7 +275,12 @@ def main(feed, get_body, lim=None):
         tag('content', xml.etree.ElementTree.tostring(e['newcontent']), type='html', **{'xml:base': e['link']})
         end('entry')
     end('feed')
-    return xml.etree.ElementTree.tostring(builder.close())
+    open(target, "w").write(xml.etree.ElementTree.tostring(builder.close()))
 
-print main('http://emergent.unpythonic.net/_atom', ['.//*[@class="content"]'])
-#print main('http://rss.slashdot.org/Slashdot/slashdot', ['.//article/header', './/article/div[@class="body"]'], 3)
+if __name__ == '__main__':
+    if len(sys.argv) > 1: rcfile = sys.argv[1]
+    execfile(rcfile)
+
+    cache = cacher()
+    for k, v in feeds.items():
+        do_one_site(k, v, max_items, outdir, extension)

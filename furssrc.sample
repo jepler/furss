@@ -1,0 +1,28 @@
+
+#python -*- coding: utf-8 -*-
+
+# This file is offered under the CC0 1.0 Universal (CC0 1.0) Public Domain
+# Dedication http://creativecommons.org/publicdomain/zero/1.0/
+
+# furss will be very slow if it is run with the default
+# cacher, so use memcache
+cacher = lambda: MemcacheCacher(['localhost:11211'])
+
+# Fetch at most 3 items per feed
+max_items = 3
+
+# Keys are feed URLs, values are lists of XPATH expressions to extract
+feeds = {
+'http://emergent.unpythonic.net/_atom': ['.//*[@class="content"]'],
+'http://rss.slashdot.org/Slashdot/slashdot':
+    ['.//article/header', './/article/div[@class="body"]']
+}
+
+# Always cache URLs for at least this long
+# expiry = 3600
+
+# Output is placed here
+# outdir = 'out'
+
+# Extension of output files
+# extension = '.atom'

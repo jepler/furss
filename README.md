@@ -15,6 +15,13 @@ does the XPATH extraction, and packages the result as the new feed.
 Optional:
 - memcached (the default debian/ubuntu packaging sets up memcached compatibly)
 
+# Configuration
+
+furss is configured via an rc file (really, a Python script), either
+`~/.furssrc` or the file named on the commandline.  The defaults are shown near
+the top of the `furss.py` script.  `furssrc.sample` shows a sample
+configuration.
+
 # License
 
 The following license is granted by the authors for all code in this
