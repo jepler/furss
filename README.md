@@ -6,6 +6,12 @@ It works by taking a feed URL and one or more XPATH expressions to extract the
 full text.  For each article in the feed, it fetches the pointed-to article,
 does the XPATH extractions, and packages the result as the new feed.
 
+It also does some minor things that are intended to unbreak the web:
+It resolves feed links to the article they ultimately point at (so that e.g.,
+when google shuts down feedproxy.google.com, URLs you copied & pasted from
+feeds will still work) and it removes "utm\_ trackers" that it recognizes from
+URLs in order to protect your privacy.
+
 # Requirements
 
 - Python 2.7 (2.6 is missing some xpath features such as attribute matching)
