@@ -18,13 +18,16 @@
 #    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 import BeautifulSoup
+import Queue
 import StringIO
 import errno
 import feedparser
 import os
 import robotparser
 import sys
+import threading
 import time
+import traceback
 import urllib
 import urlparse
 import xml.etree.ElementTree
@@ -39,6 +42,7 @@ cacher = lambda: SimpleCacher()
 outdir = 'out'
 extension = '.atom'
 max_items = 3 # None = no limit (all items from original feed)
+nworkers = 3
 
 class CacherInterface:
     def get(self, k, f):
@@ -270,10 +274,33 @@ def do_one_site(feed, get_body, lim=None, outdir='out', extension='.atom'):
     open(target + ".tmp", "w").write(xml.etree.ElementTree.tostring(builder.close()))
     os.rename(target + ".tmp", target)
 
+class Worker(threading.Thread):
+    def __init__(self, queue):
+        threading.Thread.__init__(self)
+        self.queue = queue
+
+    def run(self):
+        while 1:
+            func = self.queue.get()
+            if func is None:
+                break
+            try:
+                func[0](*func[1])
+            except:
+                traceback.print_exc()
+
 if __name__ == '__main__':
     if len(sys.argv) > 1: rcfile = sys.argv[1]
     execfile(rcfile)
 
     cache = cacher()
+    queue = Queue.Queue()
+    workers = [Worker(queue) for i in range(nworkers)]
+    for w in workers:
+        w.start()
     for k, v in feeds.items():
-        do_one_site(k, v, max_items, outdir, extension)
+        queue.put((do_one_site, (k, v, max_items, outdir, extension)))
+    for w in workers:
+        queue.put(None)
+    for w in workers:
+        w.join()

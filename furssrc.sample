@@ -26,3 +26,6 @@ feeds = {
 
 # Extension of output files
 # extension = '.atom'
+
+# Number of worker threads
+# nworkers = 3
