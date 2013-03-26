@@ -2,9 +2,9 @@
 
 Fix Up RSS (and atom) fixes rss feeds without full text.
 
-It works by taking a feed URL and an XPATH expression to extract the full
-text.  For each article in the feed, it fetches the pointed-to article,
-does the XPATH extraction, and packages the result as the new feed.
+It works by taking a feed URL and one or more XPATH expressions to extract the
+full text.  For each article in the feed, it fetches the pointed-to article,
+does the XPATH extractions, and packages the result as the new feed.
 
 # Requirements
 
