@@ -129,7 +129,7 @@ def robot_ok(u):
     if parsed.scheme not in ('http', 'https'): return 0
     ru = "%s://%s/robots.txt" % (parsed.scheme, parsed.netloc)
     return get_robot(ru).can_fetch(useragent, u)
-    
+
 def is_tracker(k):
     return k.startswith("utm_")
 
@@ -140,7 +140,7 @@ def filter_trackers(query):
 def remove_trackers(url):
     parsed = urlparse.urlsplit(url)
     fixed = (parsed[0], parsed[1], parsed[2], filter_trackers(parsed[3]), parsed[4])
-    return urlparse.urlunsplit(fixed) 
+    return urlparse.urlunsplit(fixed)
 
 def get_url(u):
     data = cache.get(('get_url', u), None)
@@ -193,7 +193,7 @@ def do_extract(doc, query):
     e = xml.etree.ElementTree.Element('div')
     e._children = result
     return e
- 
+
 class FeedFixer:
     def __init__(self, feed, get_body):
         self.get_body = get_body
