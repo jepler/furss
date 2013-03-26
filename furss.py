@@ -61,19 +61,14 @@ class SimpleCacher(CacherInterface):
         self.d = {}
 
     def get(self, k, f, *args):
-        print >>sys.stderr, "get", k
         if k not in self.d:
             if f is None:
-                print >>sys.stderr, "-> None"
                 return None
             else:
-                print >>sys.stderr, "f()"
                 self.d[k] = f(*args)
-        print >>sys.stderr, "->", self.d[k]
         return self.d[k]
 
     def set(self, k, v):
-        print >>sys.stderr, "set", k
         self.d[k] = v
 
 class MemcacheCacher(CacherInterface):
@@ -89,9 +84,7 @@ class MemcacheCacher(CacherInterface):
         k = self._key(k)
         v = self.client.get(k)
         if v is not None:
-            print >>sys.stderr, "hit", k
             return v
-        print  >>sys.stderr,"miss", k
         if f is None:
             return None
         v = f(*args)
@@ -100,7 +93,6 @@ class MemcacheCacher(CacherInterface):
 
     def set(self, k, v):
         k = self._key(k)
-        print  >>sys.stderr,"set", k
         self.client.set(k, v)
 
 cache = cacher()
