@@ -147,7 +147,6 @@ def remove_trackers(url):
     return urlparse.urlunsplit(fixed) 
 
 def get_url(u):
-    if not robot_ok(u): return None
     data = cache.get(('get_url', u), None)
     if data is not None:
         u = data[0]
@@ -156,6 +155,7 @@ def get_url(u):
         if old_fetch_time + expiry > time.time():
             return data[0], data[3]
 
+    if not robot_ok(u): return None
     f = urllib.urlopen(u)
     if f.code == 304:
         return data[0], data[3]
