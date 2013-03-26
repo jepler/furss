@@ -267,7 +267,8 @@ def do_one_site(feed, get_body, lim=None, outdir='out', extension='.atom'):
         tag('content', xml.etree.ElementTree.tostring(e['newcontent']), type='html', **{'xml:base': e['link']})
         end('entry')
     end('feed')
-    open(target, "w").write(xml.etree.ElementTree.tostring(builder.close()))
+    open(target + ".tmp", "w").write(xml.etree.ElementTree.tostring(builder.close()))
+    os.rename(target + ".tmp", target)
 
 if __name__ == '__main__':
     if len(sys.argv) > 1: rcfile = sys.argv[1]
