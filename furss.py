@@ -145,7 +145,8 @@ def get_url(u):
         u = data[0]
         old_etag = data[1]
         old_fetch_time = data[2]
-        if old_fetch_time + expiry < time.time(): return data[3]
+        if old_fetch_time + expiry > time.time():
+            return data[0], data[3]
 
     f = urllib.urlopen(u)
     if f.code == 304:
