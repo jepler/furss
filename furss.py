@@ -164,6 +164,10 @@ def get_url(u):
         return f.url, res
 
     
+def srcfix((k,v)):
+    if k == 'src': v = v.strip()
+    return k, v
+
 def bsparse(text):
     soup = BeautifulSoup.BeautifulSoup(text,
             convertEntities=BeautifulSoup.BeautifulSoup.HTML_ENTITIES)
@@ -173,6 +177,10 @@ def bsparse(text):
                 return
             builder.data(soup)
         else:
+            if soup.name.lower() == 'img':
+                soup.attrs[:] = [srcfix(a) for a in soup.attrs]
+            if soup.name.lower() == 'img' and 'src' in soup.attrs:
+                soup.attrs['src'] = soup.attrs['src'].lstrip()
             builder.start(soup.name, dict(soup.attrs))
             for s in soup:
                 emit(s)
