@@ -259,10 +259,11 @@ def do_one_site(feed, get_body, lim=None, outdir='out', extension='.atom'):
         builder.end(t)
 
     start('feed', xmlns='http://www.w3.org/2005/Atom')
-    if 'title' in f.parsed: tag('title', f.parsed['title'])
-    if 'link' in f.parsed: tag('link', f.parsed['link'])
-    if 'id' in f.parsed: tag('id', f.parsed['id'])
-    for a in f.get('author', []):
+    feedinfo = f.parsed.feed
+    if 'title' in feedinfo: tag('title', feedinfo['title'])
+    if 'link' in feedinfo: tag('link', feedinfo['link'])
+    if 'id' in feedinfo: tag('id', feedinfo['id'])
+    for a in feedinfo.get('authors', []):
         start('author')
         if 'name' in a: tag('name', a['name'])
         if 'email' in a: tag('email', a['email'])
