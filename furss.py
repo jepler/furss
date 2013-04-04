@@ -280,6 +280,7 @@ def do_one_site(feed, get_body, lim=None, outdir='out', extension='.atom'):
         if 'id' in e: tag('id', e['id'])
         if 'summary' in e: tag('summary', e['summary'])
         if 'updated' in e: tag('updated', e['updated'])
+        if 'published' in e: tag('published', e['published'])
         tag('content', xml.etree.ElementTree.tostring(e['newcontent']), type='html', **{'xml:base': e['link']})
         end('entry')
     end('feed')
