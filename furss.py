@@ -156,6 +156,7 @@ def get_url(u):
     if f.code == 304:
         return data[0], data[3]
     else:
+        print >>sys.stderr, ("Retrieved %s" % u)
         etag = f.headers.getheader('etag', None)
         res = f.read()
         now = time.time()
@@ -238,6 +239,7 @@ def firstn(it, lim):
             yield j
 
 def do_one_site(feed, get_body, lim=None, outdir='out', extension='.atom'):
+    print >>sys.stderr, "Processing feed %s" % feed
     try:
         os.mkdir(outdir)
     except os.error, e:
@@ -271,6 +273,7 @@ def do_one_site(feed, get_body, lim=None, outdir='out', extension='.atom'):
         end('author')
 
     for e in firstn(f, lim):
+        print >>sys.stderr, "Processing entry %s" % e.get('title', "(untitled)")
         start('entry')
         if 'title' in e: tag('title', e['title'])
         if 'link' in e: tag('link', e['link'])
