@@ -22,6 +22,7 @@ import Queue
 import StringIO
 import errno
 import feedparser
+import hashlib
 import os
 import robotparser
 import sys
@@ -203,6 +204,9 @@ def do_extract(doc, query):
     e._children = result
     return e
 
+def soup_and_extract(u, gb):
+    return xml.etree.ElementTree.tostring(do_extract(bsparse(u), gb))
+
 class FeedFixer:
     def __init__(self, feed, get_body):
         self.get_body = get_body
@@ -218,8 +222,9 @@ class FeedFixer:
         if 'link' in result:
             link = result['link']
             u = get_url(link)
-            soup = bsparse(u[1])
-            result['newcontent'] = do_extract(soup, self.get_body)
+            h1 = hashlib.sha1(u[1]).hexdigest()
+            h2 = hashlib.sha1(repr(self.get_body)).hexdigest()
+            result['newcontent'] = cache.get(h1+h2, soup_and_extract, u[1], self.get_body)
             result['link'] = remove_trackers(u[0])
         return result
 
@@ -281,7 +286,7 @@ def do_one_site(feed, get_body, lim=None, outdir='out', extension='.atom'):
         if 'summary' in e: tag('summary', e['summary'])
         if 'updated' in e: tag('updated', e['updated'])
         if 'published' in e: tag('published', e['published'])
-        tag('content', xml.etree.ElementTree.tostring(e['newcontent']), type='html', **{'xml:base': e['link']})
+        tag('content', e['newcontent'], type='html', **{'xml:base': e['link']})
         end('entry')
     end('feed')
     open(target + ".tmp", "w").write(xml.etree.ElementTree.tostring(builder.close()))
