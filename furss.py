@@ -247,6 +247,21 @@ def firstn(it, lim):
             if i == lim: break
             yield j
 
+def write_if_change(newcontents, target):
+    contentsmatch = (os.path.isfile(target) 
+        and open(target).read() == newcontents)
+    if contentsmatch:
+        print >>sys.stderr, "%s: unchanged" % target
+        return
+    print >>sys.stderr, "%s: written" % target
+    tmptarget = target + ".tmp"
+    open(tmptarget, "w").write(newcontents)
+    try:
+        os.rename(target + ".tmp", target)
+    except os.error:
+        os.unlink(target)
+        os.rename(target + ".tmp", target)
+
 def do_one_site(feed, get_body, lim=None, outdir='out', extension='.atom'):
     print >>sys.stderr, "Processing feed %s" % feed
     try:
@@ -293,8 +308,7 @@ def do_one_site(feed, get_body, lim=None, outdir='out', extension='.atom'):
         tag('content', e['newcontent'], type='html', **{'xml:base': e['link']})
         end('entry')
     end('feed')
-    open(target + ".tmp", "w").write(xml.etree.ElementTree.tostring(builder.close()))
-    os.rename(target + ".tmp", target)
+    write_if_change(xml.etree.ElementTree.tostring(builder.close()), target)
 
 class Worker(threading.Thread):
     def __init__(self, queue):
