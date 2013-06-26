@@ -262,6 +262,8 @@ def write_if_change(newcontents, target):
         os.unlink(target)
         os.rename(target + ".tmp", target)
 
+titles = {}
+
 def do_one_site(feed, get_body, lim=None, outdir='out', extension='.atom'):
     print >>sys.stderr, "Processing feed %s" % feed
     try:
@@ -286,7 +288,9 @@ def do_one_site(feed, get_body, lim=None, outdir='out', extension='.atom'):
 
     start('feed', xmlns='http://www.w3.org/2005/Atom')
     feedinfo = f.parsed.feed
-    if 'title' in feedinfo: tag('title', feedinfo['title'])
+    if 'title' in feedinfo:
+        titles[feed] = feedinfo['title']
+        tag('title', feedinfo['title'])
     if 'link' in feedinfo: tag('link', feedinfo['link'])
     if 'id' in feedinfo: tag('id', feedinfo['id'])
     for a in feedinfo.get('authors', []):
@@ -340,3 +344,31 @@ if __name__ == '__main__':
         queue.put(None)
     for w in workers:
         w.join()
+
+    builder = xml.etree.ElementTree.TreeBuilder()
+    def start(t, **kw):
+        builder.start(t, kw)
+    def end(t):
+        builder.end(t)
+    def tag(t, _data=None, **kw):
+        builder.start(t, kw)
+        if _data: builder.data(_data)
+        builder.end(t)
+
+    start("html")
+    start("head")
+    tag("title", "furss feeds")
+    end("head")
+    start("body")
+    start("ul")
+    for k, v in feeds.items():
+        start("li")
+        url = k.replace('%', '%25').replace('/', '%2f') + extension
+        url = url.replace('%', '%25').replace('/', '%2f').replace(':', '%3a')
+        tag("a", titles.get(k, k), href=url)
+        end("li")
+    end("ul")
+    end("body")
+    end("html")
+    index = os.path.join(outdir, "index.html")
+    write_if_change(xml.etree.ElementTree.tostring(builder.close()), index)
