@@ -144,6 +144,8 @@ def remove_trackers(url):
     return urlparse.urlunsplit(fixed)
 
 def get_url(u):
+    u = remove_trackers(u)
+    ku = u
     data = cache.get(('get_url', u), None)
     if data is not None:
         u = data[0]
@@ -162,6 +164,8 @@ def get_url(u):
         res = f.read()
         now = time.time()
         cache.set(('get_url', u), (f.url, etag, now, res, f.headers))
+        if ku != u:
+            cache.set(('get_url', ku), (f.url, etag, now, res, f.headers))
         cache.set(('get_url', f.url), (f.url, etag, now, res, f.headers))
         return f.url, res
 
