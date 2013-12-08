@@ -292,7 +292,7 @@ def do_one_site(feed, get_body, lim=None, outdir='out', extension='.atom'):
     if 'title' in feedinfo:
         titles[feed] = feedinfo['title']
         tag('title', feedinfo['title'])
-    if 'link' in feedinfo: tag('link', feedinfo['link'])
+    if 'link' in feedinfo: tag('link', href=feedinfo['link'])
     if 'id' in feedinfo: tag('id', feedinfo['id'])
     for a in feedinfo.get('authors', []):
         start('author')
