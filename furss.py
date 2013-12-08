@@ -144,6 +144,7 @@ def remove_trackers(url):
     return urlparse.urlunsplit(fixed)
 
 def get_url(u):
+    if isinstance(u, unicode): u = u.encode('utf-8')
     u = remove_trackers(u)
     ku = u
     data = cache.get(('get_url', u), None)
