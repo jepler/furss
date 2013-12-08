@@ -314,6 +314,7 @@ def do_one_site(feed, get_body, lim=None, outdir='out', extension='.atom'):
         if 'title' in e: tag('title', e['title'])
         if 'link' in e: tag('link', href=e['link'])
         if 'id' in e: tag('id', e['id'])
+        else: tag('id', e['link'])
         if 'summary' in e: tag('summary', e['summary'])
         if 'updated' in e: tag('updated', e['updated'])
         if 'published' in e: tag('published', e['published'])
