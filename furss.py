@@ -312,7 +312,7 @@ def do_one_site(feed, get_body, lim=None, outdir='out', extension='.atom'):
             if 'uri' in a: tag('uri', a['uri'])
             end('author')
         if 'title' in e: tag('title', e['title'])
-        if 'link' in e: tag('link', e['link'])
+        if 'link' in e: tag('link', href=e['link'])
         if 'id' in e: tag('id', e['id'])
         if 'summary' in e: tag('summary', e['summary'])
         if 'updated' in e: tag('updated', e['updated'])
