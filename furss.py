@@ -305,6 +305,12 @@ def do_one_site(feed, get_body, lim=None, outdir='out', extension='.atom'):
     for e in firstn(f, lim):
         print >>sys.stderr, "Processing entry %s" % e.get('title', "(untitled)").encode('utf-8')
         start('entry')
+        for a in e.get('author', []):
+            start('author')
+            if 'name' in a: tag('name', a['name'])
+            if 'email' in a: tag('email', a['email'])
+            if 'uri' in a: tag('uri', a['uri'])
+            end('author')
         if 'title' in e: tag('title', e['title'])
         if 'link' in e: tag('link', e['link'])
         if 'id' in e: tag('id', e['id'])
